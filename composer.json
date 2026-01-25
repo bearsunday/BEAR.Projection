@@ -1,5 +1,5 @@
 {
-    "name": "b-e-a-r/projection",
+    "name": "bear/projection",
     "description": "Read-optimized query library for BEAR.Resource #[Embed]",
     "license": "MIT",
     "authors": [
