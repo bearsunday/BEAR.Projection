@@ -58,21 +58,24 @@ final class UserFactory
 Create a SQL file with named placeholders (`:name` style):
 
 ```sql
--- Projection/user.sql
+-- var/sql/query/user.sql
 SELECT id, name, email FROM users WHERE id = :id
 ```
 
 ### 4. Configure the Module
 
 ```php
-use BEAR\Projection\Module\QueryModule;
+use BEAR\Projection\Module\ProjectionModule;
 use Ray\Di\AbstractModule;
 
 class AppModule extends AbstractModule
 {
     protected function configure(): void
     {
-        $this->install(new QueryModule(__DIR__ . '/Projection'));
+        $this->install(new ProjectionModule(
+            sqlDir: __DIR__ . '/../var/sql/query',
+            projectionNamespace: 'MyApp\\Projection\\',
+        ));
     }
 }
 ```
@@ -102,22 +105,33 @@ class UserController
 
 ## File Structure
 
-```
+```text
+var/
+  sql/
+    query/
+      user.sql           # SQL query file
+      user_profile.sql   # SQL query file (snake_case)
 src/
   Projection/
-    user.sql           # SQL query file
-    UserProjection.php # Read model (value object)
-    UserFactory.php    # Row-to-object converter
+    UserProjection.php   # Read model (value object)
+    UserFactory.php      # Row-to-object converter
+    UserProfileProjection.php
+    UserProfileFactory.php
 ```
 
 ## Naming Conventions
 
-| Component | Naming Pattern | Example |
-|-----------|---------------|---------|
-| SQL file | `{name}.sql` | `user.sql` |
-| Projection | `{Name}Projection` | `UserProjection` |
-| Factory | `{Name}Factory` | `UserFactory` |
-| URI | `query://self/{name}` | `query://self/user` |
+| Component  | Naming Pattern        | Example                                           |
+|------------|-----------------------|---------------------------------------------------|
+| SQL file   | `{name}.sql`          | `user.sql`, `user_profile.sql`                    |
+| Projection | `{Name}Projection`    | `UserProjection`, `UserProfileProjection`         |
+| Factory    | `{Name}Factory`       | `UserFactory`, `UserProfileFactory`               |
+| URI        | `query://self/{name}` | `query://self/user`, `query://self/user_profile`  |
+
+Snake_case SQL file names are automatically converted to CamelCase class names:
+- `user` -> `UserFactory`
+- `user_profile` -> `UserProfileFactory`
+- `admin_user_list` -> `AdminUserListFactory`
 
 ## Commands
 

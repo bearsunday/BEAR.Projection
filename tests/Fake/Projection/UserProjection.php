@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace BEAR\Projection\Projection;
+namespace BEAR\Projection\Fake\Projection;
 
-/**
- * User Projection - CQRS読み取りモデル
- */
 final class UserProjection
 {
     public function __construct(

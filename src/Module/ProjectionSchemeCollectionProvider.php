@@ -4,28 +4,30 @@ declare(strict_types=1);
 
 namespace BEAR\Projection\Module;
 
-use BEAR\Projection\QueryAdapter;
+use BEAR\Projection\ProjectionAdapter;
+use BEAR\Resource\SchemeCollection;
 use BEAR\Resource\SchemeCollectionInterface;
 use Override;
 use Ray\Di\ProviderInterface;
 
 /** @implements ProviderInterface<SchemeCollectionInterface> */
-final readonly class QuerySchemeCollectionProvider implements ProviderInterface
+final readonly class ProjectionSchemeCollectionProvider implements ProviderInterface
 {
     public function __construct(
-        private SchemeCollectionInterface $schemeCollection,
-        private QueryAdapter $queryAdapter,
+        private ProjectionAdapter $projectionAdapter,
     ) {
     }
 
     #[Override]
     public function get(): SchemeCollectionInterface
     {
-        $this->schemeCollection
+        $schemeCollection = new SchemeCollection();
+
+        $schemeCollection
             ->scheme('query')
             ->host('self')
-            ->toAdapter($this->queryAdapter);
+            ->toAdapter($this->projectionAdapter);
 
-        return $this->schemeCollection;
+        return $schemeCollection;
     }
 }

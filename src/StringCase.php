@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BEAR\Projection;
 
-use function lcfirst;
 use function str_replace;
 use function ucwords;
 
