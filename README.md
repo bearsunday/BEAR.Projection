@@ -12,6 +12,11 @@ BEAR.Projection implements the [BDR Pattern](docs/BDR_PATTERN.md) for the Read s
 - **Parallel SQL execution** - Multiple `#[Embed]` queries run concurrently
 - **DI-powered Factory** - Inject dependencies for data transformation
 
+## Requirements
+
+- PHP 8.2+
+- MySQL (uses mysqli for async query execution, not PDO)
+
 ## Installation
 
 ```bash
