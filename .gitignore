@@ -1,7 +1,13 @@
 /vendor/
 /vendor-bin/*/vendor/
+/vendor-bin/*/composer.lock
 /.phpcs-cache
 /.phpunit.result.cache
 /.phpunit.cache
 /composer.lock
 /.idea/
+/demo/vendor/
+/demo/vendor-bin/*/vendor/
+/demo/vendor-bin/*/composer.lock
+/demo/.phpunit.cache/
+/demo/composer.lock
