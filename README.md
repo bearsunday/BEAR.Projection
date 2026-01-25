@@ -4,13 +4,13 @@ Read-optimized query library for BEAR.Resource `#[Embed]`
 
 ## Overview
 
-BEAR.Projection is a companion to [Ray.MediaQuery](https://github.com/ray-di/Ray.MediaQuery), focused exclusively on the **Read** side of CQRS. It provides `query://` scheme resources designed primarily for use with `#[Embed]`, enabling parallel SQL execution for embedded resources.
+BEAR.Projection implements the [BDR Pattern](docs/BDR_PATTERN.md) for the Read side, providing `query://` scheme resources designed for `#[Embed]`. A companion to [Ray.MediaQuery](https://github.com/ray-di/Ray.MediaQuery).
 
 ### Features
 
-- **Embed-first design** - Optimized for `#[Embed]` attribute usage in ResourceObject
+- **Embed-first design** - Optimized for `#[Embed]` in ResourceObject
 - **Parallel SQL execution** - Multiple `#[Embed]` queries run concurrently
-- **DI-powered Factory** - Inject dependencies for data transformation and validation
+- **DI-powered Factory** - Inject dependencies for data transformation
 
 ## Installation
 
