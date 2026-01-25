@@ -6,6 +6,7 @@
 /phpstan.neon       export-ignore
 /phpunit.xml.dist   export-ignore
 /psalm.xml          export-ignore
+/codecov.yml        export-ignore
 /.github            export-ignore
 /docs               export-ignore
 /CLAUDE.md          export-ignore
