@@ -1,10 +1,16 @@
 # BEAR.Projection
 
-CQRS Query-side (Read Model) library for BEAR.Sunday
+Read-optimized query library for BEAR.Resource `#[Embed]`
 
 ## Overview
 
-BEAR.Projection provides a clean separation between commands (write) and queries (read) in BEAR.Sunday applications. It enables SQL-based projections that map directly to strongly-typed value objects.
+BEAR.Projection implements the [BDR Pattern](docs/BDR_PATTERN.md) for the Read side, providing `query://` scheme resources designed for `#[Embed]`. A companion to [Ray.MediaQuery](https://github.com/ray-di/Ray.MediaQuery).
+
+### Features
+
+- **Embed-first design** - Optimized for `#[Embed]` in ResourceObject
+- **Parallel SQL execution** - Multiple `#[Embed]` queries run concurrently
+- **DI-powered Factory** - Inject dependencies for data transformation
 
 ## Installation
 
@@ -12,118 +18,115 @@ BEAR.Projection provides a clean separation between commands (write) and queries
 composer require bear/projection
 ```
 
-## Requirements
-
-- PHP 8.1+
-- ext-mysqli
-- bear/resource ^1.0
-- ray/di ^2.0
-
 ## Usage
 
-### 1. Define a Projection (Read Model)
+### 1. Define a Projection
 
 ```php
 namespace MyApp\Projection;
 
-final class UserProjection
+final class UserProfile
 {
     public function __construct(
         public readonly string $id,
         public readonly string $name,
-        public readonly string $email,
+        public readonly int $age,
+        public readonly string $avatarUrl,
     ) {
     }
 }
 ```
 
-### 2. Create a Factory
+### 2. Create a Factory with DI
 
-The factory converts SQL row data to your Projection object:
+Factory can inject dependencies for data transformation and validation:
 
 ```php
 namespace MyApp\Projection;
 
-final class UserFactory
+final class UserProfileFactory
 {
-    public function __invoke(string $id, string $name, string $email): UserProjection
-    {
-        return new UserProjection($id, $name, $email);
+    public function __construct(
+        private readonly AgeCalculator $ageCalculator,
+        private readonly ImageUrlResolver $imageResolver,
+    ) {
+    }
+
+    public function __invoke(
+        string $id,
+        string $name,
+        string $birthDate,
+        string $avatarPath,
+    ): UserProfile {
+        return new UserProfile(
+            id: $id,
+            name: $name,
+            age: $this->ageCalculator->fromBirthDate($birthDate),
+            avatarUrl: $this->imageResolver->resolve($avatarPath),
+        );
     }
 }
 ```
 
 ### 3. Write the SQL Query
 
-Create a SQL file with named placeholders (`:name` style):
-
 ```sql
--- Projection/user.sql
-SELECT id, name, email FROM users WHERE id = :id
+-- var/sql/query/user_profile.sql
+SELECT id, name, birth_date, avatar_path FROM users WHERE id = :id
 ```
 
 ### 4. Configure the Module
 
 ```php
-use BEAR\Projection\Module\QueryModule;
-use Ray\Di\AbstractModule;
+use BEAR\Projection\Module\ProjectionModule;
 
 class AppModule extends AbstractModule
 {
     protected function configure(): void
     {
-        $this->install(new QueryModule(__DIR__ . '/Projection'));
+        $this->install(new ProjectionModule(
+            sqlDir: __DIR__ . '/../var/sql/query',
+            projectionNamespace: 'MyApp\\Projection\\',
+        ));
     }
 }
 ```
 
-### 5. Query via Resource
-
-Access projections through the `query://` scheme:
+### 5. Embed in Resource
 
 ```php
-use BEAR\Resource\ResourceInterface;
+use BEAR\Resource\Annotation\Embed;
+use BEAR\Resource\ResourceObject;
 
-class UserController
+class User extends ResourceObject
 {
-    public function __construct(
-        private ResourceInterface $resource,
-    ) {
-    }
-
-    public function show(string $id): UserProjection
+    #[Embed(rel: 'profile', src: 'query://self/user_profile{?id}')]
+    #[Embed(rel: 'orders', src: 'query://self/user_orders{?id}')]
+    public function onGet(string $id): static
     {
-        $ro = $this->resource->get('query://self/user', ['id' => $id]);
-
-        return $ro->body[0]; // UserProjection object
+        // Both queries execute in parallel
+        return $this;
     }
 }
 ```
 
 ## File Structure
 
-```
-src/
-  Projection/
-    user.sql           # SQL query file
-    UserProjection.php # Read model (value object)
-    UserFactory.php    # Row-to-object converter
+```text
+var/sql/query/
+  user_profile.sql
+  user_orders.sql
+
+src/Projection/
+  UserProfile.php
+  UserProfileFactory.php
+  UserOrders.php
+  UserOrdersFactory.php
 ```
 
 ## Naming Conventions
 
-| Component | Naming Pattern | Example |
-|-----------|---------------|---------|
-| SQL file | `{name}.sql` | `user.sql` |
-| Projection | `{Name}Projection` | `UserProjection` |
-| Factory | `{Name}Factory` | `UserFactory` |
-| URI | `query://self/{name}` | `query://self/user` |
-
-## Commands
-
-```bash
-composer test      # Run unit tests
-composer tests     # Run tests and quality checks
-composer cs-fix    # Fix coding style
-composer sa        # Run static analysis
-```
+| SQL file           | Factory class        | URI                            |
+|--------------------|----------------------|--------------------------------|
+| `user_profile.sql` | `UserProfileFactory` | `query://self/user_profile`    |
+| `user_orders.sql`  | `UserOrdersFactory`  | `query://self/user_orders`     |
