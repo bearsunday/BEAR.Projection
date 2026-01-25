@@ -17,7 +17,6 @@ use BEAR\Resource\ResourceObject;
 use mysqli;
 use mysqli_sql_exception;
 use mysqli_stmt;
-use Override;
 use Ray\Di\InjectorInterface;
 use Throwable;
 
@@ -56,7 +55,6 @@ final class ProjectionResource extends ResourceObject implements ProjectionResou
      *
      * @param array<string, mixed> $params Additional parameters (merged with URI query)
      */
-    #[Override]
     public function onGet(array $params = []): static
     {
         // Get projection name from URI path (set by Factory)

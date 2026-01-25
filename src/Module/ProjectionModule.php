@@ -9,7 +9,6 @@ use BEAR\Projection\Annotation\SqlDir;
 use BEAR\Projection\ProjectionAdapter;
 use BEAR\Projection\ProjectionResourceInterface;
 use BEAR\Projection\Resource\ProjectionResource;
-use Override;
 use Ray\Di\AbstractModule;
 
 final class ProjectionModule extends AbstractModule
@@ -22,7 +21,6 @@ final class ProjectionModule extends AbstractModule
         parent::__construct($module);
     }
 
-    #[Override]
     protected function configure(): void
     {
         $this->bind()->annotatedWith(SqlDir::class)->toInstance($this->sqlDir);

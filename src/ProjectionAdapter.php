@@ -8,7 +8,6 @@ use BEAR\Projection\Resource\ProjectionResource;
 use BEAR\Resource\AbstractUri;
 use BEAR\Resource\AdapterInterface;
 use BEAR\Resource\ResourceObject;
-use Override;
 use Ray\Di\InjectorInterface;
 
 final readonly class ProjectionAdapter implements AdapterInterface
@@ -18,7 +17,6 @@ final readonly class ProjectionAdapter implements AdapterInterface
     ) {
     }
 
-    #[Override]
     public function get(AbstractUri $uri): ResourceObject
     {
         return $this->injector->getInstance(ProjectionResource::class);

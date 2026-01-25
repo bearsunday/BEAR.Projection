@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "ext-mysqli": "*",
         "bear/resource": "^1.0",
         "ray/di": "^2.0"

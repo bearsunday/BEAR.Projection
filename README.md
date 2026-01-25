@@ -4,20 +4,13 @@ CQRS Query-side (Read Model) library for BEAR.Sunday
 
 ## Overview
 
-BEAR.Projection provides a clean separation between commands (write) and queries (read) in BEAR.Sunday applications. It enables SQL-based projections that map directly to strongly-typed value objects.
+BEAR.Projection provides a clean separation between commands (write) and queries (read) in BEAR.Sunday applications. It enables SQL-based projections that map directly to strongly-typed value objects via `query://` scheme.
 
 ## Installation
 
 ```bash
 composer require bear/projection
 ```
-
-## Requirements
-
-- PHP 8.1+
-- ext-mysqli
-- bear/resource ^1.0
-- ray/di ^2.0
 
 ## Usage
 
@@ -85,22 +78,35 @@ class AppModule extends AbstractModule
 Access projections through the `query://` scheme:
 
 ```php
-use BEAR\Resource\ResourceInterface;
+// Direct access
+$ro = $this->resource->get('query://self/user', ['id' => $id]);
+$user = $ro->body[0]; // UserProjection object
+```
 
-class UserController
+### 6. Embed in Resource
+
+Use `#[Embed]` to embed query results in your resource:
+
+```php
+use BEAR\Resource\Annotation\Embed;
+use BEAR\Resource\ResourceObject;
+
+class User extends ResourceObject
 {
-    public function __construct(
-        private ResourceInterface $resource,
-    ) {
-    }
-
-    public function show(string $id): UserProjection
+    #[Embed(rel: 'profile', src: 'query://self/user_profile{?id}')]
+    public function onGet(string $id): static
     {
-        $ro = $this->resource->get('query://self/user', ['id' => $id]);
-
-        return $ro->body[0]; // UserProjection object
+        // profile is automatically fetched and embedded
+        return $this;
     }
 }
+```
+
+The embedded query result contains `UserProfileProjection` objects:
+
+```php
+$user = $this->resource->get('app://self/user', ['id' => '123']);
+$profile = $user->body['profile'][0]; // UserProfileProjection object
 ```
 
 ## File Structure
@@ -132,12 +138,3 @@ Snake_case SQL file names are automatically converted to CamelCase class names:
 - `user` -> `UserFactory`
 - `user_profile` -> `UserProfileFactory`
 - `admin_user_list` -> `AdminUserListFactory`
-
-## Commands
-
-```bash
-composer test      # Run unit tests
-composer tests     # Run tests and quality checks
-composer cs-fix    # Fix coding style
-composer sa        # Run static analysis
-```
