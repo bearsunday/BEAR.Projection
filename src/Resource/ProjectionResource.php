@@ -176,6 +176,8 @@ final class ProjectionResource extends ResourceObject implements ProjectionResou
             $types .= $this->getParamType($value);
         }
 
+        // PHP 8.0+ properly handles spread operator for by-reference parameters
+        /** @psalm-suppress MixedArgument */
         $stmt->bind_param($types, ...$params);
     }
 

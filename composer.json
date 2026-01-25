@@ -1,6 +1,6 @@
 {
     "name": "b-e-a-r/projection",
-    "description": "",
+    "description": "SQL-based projection for BEAR.Sunday",
     "license": "MIT",
     "authors": [
         {
@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "ext-mysqli": "*",
         "bear/resource": "^1.0",
         "ray/di": "^2.0"
@@ -41,7 +41,7 @@
         "cs-fix": "phpcbf src tests",
         "phpstan": "phpstan analyse -c phpstan.neon",
         "psalm": "psalm --show-info=false",
-        "phpmd": "phpmd text ./phpmd.xml",
+        "phpmd": "phpmd src text ./phpmd.xml",
         "baseline": "phpstan analyse -c phpstan.neon --generate-baseline --allow-empty-baseline && psalm --set-baseline=psalm-baseline.xml",
         "crc": "composer-require-checker check ./composer.json",
         "metrics": "phpmetrics --report-html=build/metrics --exclude=Exception src",
