@@ -1,0 +1,6 @@
+/vendor/
+/vendor-bin/*/vendor/
+/.phpcs-cache
+/.phpunit.result.cache
+/composer.lock
+/.idea/
