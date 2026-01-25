@@ -1,6 +1,6 @@
 {
     "name": "b-e-a-r/projection",
-    "description": "SQL-based projection for BEAR.Sunday",
+    "description": "Read-optimized query library for BEAR.Resource #[Embed]",
     "license": "MIT",
     "authors": [
         {
