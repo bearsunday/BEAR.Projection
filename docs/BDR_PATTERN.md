@@ -7,11 +7,11 @@ The BDR Pattern represents a paradigm where **SQL and Object-Oriented Programmin
 - **SQL remains SQL** - Complex queries, JOINs, and optimizations operate at maximum performance
 - **Objects remain objects** - Domain models are autonomous entities with behavior, not mere data containers
 
-## Projections are Disposable
+## Why "Projection"?
 
-Greg Young, architect of CQRS, stated that Query models should be treated as **"disposable"**.
+In CQRS terminology, a **Projection** is a read-optimized view of data—a specific "projection" of the underlying state onto a screen or API response.
 
-Projections are not sacred domain models requiring permanent maintenance. They are snapshots optimized for specific screens at specific moments. When screens change, throw them away and rebuild.
+Greg Young, architect of CQRS, stated that Query models should be treated as **"disposable"**. Projections are not sacred domain models requiring permanent maintenance. They are snapshots optimized for specific screens at specific moments. When screens change, throw them away and rebuild.
 
 This frees developers from:
 - Complex ORM mappings
@@ -19,7 +19,7 @@ This frees developers from:
 - Serialization battles
 - The burden of making Query models "architecturally correct"
 
-See: [CQRSとイミュータブルデータモデル](https://qiita.com/koriym/items/4e52758d5327447fed13)
+See: [CQRS and Immutable Data Model](https://qiita.com/koriym/items/4e52758d5327447fed13)
 
 ## Three-Layer Architecture
 
