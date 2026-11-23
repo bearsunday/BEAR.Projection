@@ -18,7 +18,6 @@ use mysqli;
 use mysqli_sql_exception;
 use mysqli_stmt;
 use Ray\Di\InjectorInterface;
-use Throwable;
 
 use function array_diff;
 use function array_keys;
@@ -93,7 +92,7 @@ final class ProjectionResource extends ResourceObject implements ProjectionResou
         }
 
         if ($stmt === false) {
-            throw new QueryPrepareException($this->getMysqliError(), $query);
+            throw new QueryPrepareException($this->mysqli->error, $query);
         }
 
         try {
@@ -105,13 +104,13 @@ final class ProjectionResource extends ResourceObject implements ProjectionResou
             }
 
             if (! $executeResult) {
-                throw new QueryExecuteException($this->getStmtError($stmt));
+                throw new QueryExecuteException($stmt->error);
             }
 
             // 4. Fetch result and transform via Projection (Factory via DI)
             $result = $stmt->get_result();
             if ($result === false) {
-                throw new QueryExecuteException($this->getStmtError($stmt));
+                throw new QueryExecuteException($stmt->error);
             }
 
             $rows = $result->fetch_all(MYSQLI_ASSOC);
@@ -186,23 +185,5 @@ final class ProjectionResource extends ResourceObject implements ProjectionResou
             is_float($value) => 'd',
             default => 's',
         };
-    }
-
-    private function getMysqliError(): string
-    {
-        try {
-            return $this->mysqli->error;
-        } catch (Throwable) {
-            return 'Unknown error';
-        }
-    }
-
-    private function getStmtError(mysqli_stmt $stmt): string
-    {
-        try {
-            return $stmt->error;
-        } catch (Throwable) {
-            return 'Unknown error';
-        }
     }
 }
